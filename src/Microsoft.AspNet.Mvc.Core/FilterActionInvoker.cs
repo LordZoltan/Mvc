@@ -11,6 +11,7 @@ using Microsoft.AspNet.Mvc.ModelBinding;
 using Microsoft.AspNet.Mvc.ModelBinding.Validation;
 using Microsoft.Framework.Internal;
 using Microsoft.Framework.Logging;
+using Microsoft.Framework.Notify;
 
 namespace Microsoft.AspNet.Mvc.Core
 {
@@ -23,6 +24,7 @@ namespace Microsoft.AspNet.Mvc.Core
         private readonly IReadOnlyList<IModelValidatorProvider> _modelValidatorProviders;
         private readonly IReadOnlyList<IValueProviderFactory> _valueProviderFactories;
         private readonly IScopedInstance<ActionBindingContext> _actionBindingContextAccessor;
+        private readonly INotifier _notifier;
         private readonly ILogger _logger;
         private readonly int _maxModelValidationErrors;
 
@@ -63,6 +65,7 @@ namespace Microsoft.AspNet.Mvc.Core
             [NotNull] IReadOnlyList<IValueProviderFactory> valueProviderFactories,
             [NotNull] IScopedInstance<ActionBindingContext> actionBindingContextAccessor,
             [NotNull] ILoggerFactory loggerFactory,
+            [NotNull] INotifier notifier,
             int maxModelValidationErrors)
         {
             ActionContext = actionContext;
@@ -75,6 +78,7 @@ namespace Microsoft.AspNet.Mvc.Core
             _valueProviderFactories = valueProviderFactories;
             _actionBindingContextAccessor = actionBindingContextAccessor;
             _logger = loggerFactory.CreateLogger<FilterActionInvoker>();
+            _notifier = notifier;
             _maxModelValidationErrors = maxModelValidationErrors;
         }
 
@@ -198,7 +202,21 @@ namespace Microsoft.AspNet.Mvc.Core
             var current = _cursor.GetNextFilter<IAuthorizationFilter, IAsyncAuthorizationFilter>();
             if (current.FilterAsync != null)
             {
+                if (_notifier.ShouldNotify("Microsoft.AspNet.Mvc.BeforeAuthorizationAsyncFilter"))
+                {
+                    _notifier.Notify(
+                        "Microsoft.AspNet.Mvc.BeforeAsyncAuthorizationFilter",
+                        new { filter = current.FilterAsync });
+                }
+
                 await current.FilterAsync.OnAuthorizationAsync(_authorizationContext);
+
+                if (_notifier.ShouldNotify("Microsoft.AspNet.Mvc.AfterAsyncAuthorizationFilter"))
+                {
+                    _notifier.Notify(
+                        "Microsoft.AspNet.Mvc.AfterAsyncAuthorizationFilter",
+                        new { filter = current.FilterAsync, result = _authorizationContext.Result });
+                }
 
                 if (_authorizationContext.Result == null)
                 {
@@ -212,7 +230,21 @@ namespace Microsoft.AspNet.Mvc.Core
             }
             else if (current.Filter != null)
             {
+                if (_notifier.ShouldNotify("Microsoft.AspNet.Mvc.BeforeAuthorizationFilter"))
+                {
+                    _notifier.Notify(
+                        "Microsoft.AspNet.Mvc.BeforeAuthorizationFilter",
+                        new { filter = current.FilterAsync });
+                }
+
                 current.Filter.OnAuthorization(_authorizationContext);
+
+                if (_notifier.ShouldNotify("Microsoft.AspNet.Mvc.AfterAuthorizationFilter"))
+                {
+                    _notifier.Notify(
+                        "Microsoft.AspNet.Mvc.AfterAuthorizationFilter",
+                        new { filter = current.FilterAsync, result = _authorizationContext.Result });
+                }
 
                 if (_authorizationContext.Result == null)
                 {

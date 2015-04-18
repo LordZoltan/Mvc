@@ -16,6 +16,7 @@ using Microsoft.AspNet.Testing;
 using Microsoft.Framework.Internal;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.Logging.Testing;
+using Microsoft.Framework.Notify;
 using Microsoft.Framework.OptionsModel;
 using Moq;
 using Xunit;
@@ -2067,6 +2068,7 @@ namespace Microsoft.AspNet.Mvc
                 new MockScopedInstance<ActionBindingContext>(),
                 tempData,
                 new NullLoggerFactory(),
+                Mock.Of<INotifier>(),
                 maxAllowedErrorsInModelState);
 
             return invoker;
@@ -2130,6 +2132,7 @@ namespace Microsoft.AspNet.Mvc
                 new MockScopedInstance<ActionBindingContext>(),
                 Mock.Of<ITempDataDictionary>(),
                 new NullLoggerFactory(),
+                Mock.Of<INotifier>(),
                 200);
 
             // Act
@@ -2231,6 +2234,7 @@ namespace Microsoft.AspNet.Mvc
                 IScopedInstance<ActionBindingContext> actionBindingContext,
                 ITempDataDictionary tempData,
                 ILoggerFactory loggerFactory,
+                INotifier notifier,
                 int maxAllowedErrorsInModelState)
                 : base(
                       actionContext,
@@ -2246,6 +2250,7 @@ namespace Microsoft.AspNet.Mvc
                       actionBindingContext,
                       tempData,
                       loggerFactory,
+                      notifier,
                       maxAllowedErrorsInModelState)
             {
                 ControllerFactory = controllerFactory;

@@ -7,6 +7,7 @@ using Microsoft.AspNet.Mvc.ModelBinding;
 using Microsoft.AspNet.Mvc.ModelBinding.Validation;
 using Microsoft.Framework.Internal;
 using Microsoft.Framework.Logging;
+using Microsoft.Framework.Notify;
 using Microsoft.Framework.OptionsModel;
 
 namespace Microsoft.AspNet.Mvc.Core
@@ -25,6 +26,7 @@ namespace Microsoft.AspNet.Mvc.Core
         private readonly ITempDataDictionary _tempData;
         private readonly int _maxModelValidationErrors;
         private readonly ILoggerFactory _loggerFactory;
+        private readonly INotifier _notifier;
 
         public ControllerActionInvokerProvider(
             IControllerFactory controllerFactory,
@@ -33,7 +35,8 @@ namespace Microsoft.AspNet.Mvc.Core
             IOptions<MvcOptions> optionsAccessor,
             IScopedInstance<ActionBindingContext> actionBindingContextAccessor,
             ITempDataDictionary tempData,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            INotifier notifier)
         {
             _controllerFactory = controllerFactory;
             _filterProviders = filterProviders.OrderBy(item => item.Order).ToArray();
@@ -47,6 +50,7 @@ namespace Microsoft.AspNet.Mvc.Core
             _tempData = tempData;
             _maxModelValidationErrors = optionsAccessor.Options.MaxModelValidationErrors;
             _loggerFactory = loggerFactory;
+            _notifier = notifier;
         }
 
         public int Order
@@ -75,6 +79,7 @@ namespace Microsoft.AspNet.Mvc.Core
                                     _actionBindingContextAccessor,
                                     _tempData,
                                     _loggerFactory,
+                                    _notifier,
                                     _maxModelValidationErrors);
             }
         }

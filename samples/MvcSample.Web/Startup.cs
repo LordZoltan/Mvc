@@ -15,6 +15,9 @@ using Microsoft.Framework.ConfigurationModel;
 using Microsoft.Framework.DependencyInjection;
 #if DNX451
 using Microsoft.Framework.DependencyInjection.Autofac;
+#endif
+using Microsoft.Framework.Notify;
+#if DNX451
 using Microsoft.Framework.Runtime;
 using Microsoft.Framework.Runtime.Infrastructure;
 #endif
@@ -38,6 +41,9 @@ namespace MvcSample.Web
             services.AddSingleton<PassThroughAttribute>();
             services.AddSingleton<UserNameService>();
             services.AddTransient<ITestService, TestService>();
+
+            services.AddSingleton<INotifier, Notifier>();
+            services.AddSingleton<INotifyParameterAdapter, NotifierParameterAdapter>();
 
             services.ConfigureMvc(options =>
             {
@@ -92,6 +98,8 @@ namespace MvcSample.Web
 
         public void Configure(IApplicationBuilder app)
         {
+            app.UseMiddleware<ListenerMiddleware>();
+
             app.UseStatusCodePages();
             app.UseFileServer();
 
