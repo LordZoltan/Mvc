@@ -3,9 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNet.Mvc.Description;
 using Microsoft.AspNet.Mvc.ModelBinding;
 
-namespace Microsoft.AspNet.Mvc.Description
+namespace Microsoft.AspNet.Mvc.ApiExplorer
 {
     /// <summary>
     /// Represents an API exposed by this application.

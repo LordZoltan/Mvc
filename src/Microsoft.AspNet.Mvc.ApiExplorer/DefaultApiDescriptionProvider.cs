@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Mvc.Description;
 using Microsoft.AspNet.Mvc.ModelBinding;
 using Microsoft.AspNet.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNet.Routing;
@@ -14,7 +15,7 @@ using Microsoft.Framework.Internal;
 using Microsoft.Framework.OptionsModel;
 using Microsoft.Net.Http.Headers;
 
-namespace Microsoft.AspNet.Mvc.Description
+namespace Microsoft.AspNet.Mvc.ApiExplorer
 {
     /// <summary>
     /// Implements a provider of <see cref="ApiDescription"/> for actions represented

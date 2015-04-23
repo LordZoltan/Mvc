@@ -7,8 +7,8 @@ using Microsoft.AspNet.Mvc.Description;
 namespace Microsoft.AspNet.Mvc
 {
     /// <summary>
-    /// Controls the visibility and group name for an <see cref="ApiDescription"/> of the associated
-    /// controller class or action method.
+    /// Controls the visibility and group name for an <see cref="Microsoft.AspNet.Mvc.ApiExplorer.ApiDescription"/>
+    /// of the associated controller class or action method.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class ApiExplorerSettingsAttribute :

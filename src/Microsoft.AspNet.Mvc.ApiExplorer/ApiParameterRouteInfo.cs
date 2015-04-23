@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNet.Routing;
 
-namespace Microsoft.AspNet.Mvc.Description
+namespace Microsoft.AspNet.Mvc.ApiExplorer
 {
     /// <summary>
     /// A metadata description of routing information for an <see cref="ApiParameterDescription"/>.
