@@ -12,6 +12,7 @@ using Microsoft.Framework.DependencyInjection;
 using Moq;
 using Xunit;
 using System.Text;
+using Microsoft.Net.Http.Headers;
 
 namespace Microsoft.AspNet.Mvc
 {
@@ -112,6 +113,37 @@ namespace Microsoft.AspNet.Mvc
         }
 
         [Fact]
+        public async Task ExecuteResultAsync_SetsSuppliedContentTypeAndEncoding()
+        {
+            // Arrange
+            var expectedContentType = "text/foo; charset=us-ascii";
+            // path will be C:/.../TestFiles/FilePathResultTestFile.txt
+            var path = Path.GetFullPath(Path.Combine(".", "TestFiles", "FilePathResultTestFile.txt"));
+            path = path.Replace(@"\", "/");
+
+            // Point the FileProviderRoot to a subfolder
+            var result = new FilePathResult(path, MediaTypeHeaderValue.Parse(expectedContentType))
+            {
+                FileProvider = new PhysicalFileProvider(Path.GetFullPath("Utils")),
+            };
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Response.Body = new MemoryStream();
+
+            var context = new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
+
+            // Act
+            await result.ExecuteResultAsync(context);
+            httpContext.Response.Body.Position = 0;
+
+            // Assert
+            Assert.NotNull(httpContext.Response.Body);
+            var contents = await new StreamReader(httpContext.Response.Body).ReadToEndAsync();
+            Assert.Equal("FilePathResultTestFile contents", contents);
+            Assert.Equal(expectedContentType, httpContext.Response.ContentType);
+        }
+
+        [Fact]
         public async Task ExecuteResultAsync_WorksWithAbsolutePaths_UsingBackSlash()
         {
             // Arrange
@@ -186,7 +218,7 @@ namespace Microsoft.AspNet.Mvc
             nonDiskFileInfo.Setup(fi => fi.CreateReadStream()).Returns(sourceStream);
             var nonDiskFileProvider = new Mock<IFileProvider>();
             nonDiskFileProvider.Setup(fp => fp.GetFileInfo(It.IsAny<string>())).Returns(nonDiskFileInfo.Object);
-            var filePathResult = new FilePathResult("/SampleEmbeddedFile.txt")
+            var filePathResult = new FilePathResult("/SampleEmbeddedFile.txt", "text/plain")
             {
                 FileProvider = nonDiskFileProvider.Object
             };

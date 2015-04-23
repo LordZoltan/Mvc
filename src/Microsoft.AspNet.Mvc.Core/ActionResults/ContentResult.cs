@@ -11,11 +11,14 @@ namespace Microsoft.AspNet.Mvc
 {
     public class ContentResult : ActionResult
     {
+        private readonly MediaTypeHeaderValue DefaultContentType = new MediaTypeHeaderValue("text/plain")
+        {
+            Encoding = Encodings.UTF8EncodingWithoutBOM
+        };
+
         public string Content { get; set; }
 
-        public Encoding ContentEncoding { get; set; }
-
-        public string ContentType { get; set; }
+        public MediaTypeHeaderValue ContentType { get; set; }
 
         /// <summary>
         /// Gets or sets the HTTP status code.
@@ -26,17 +29,34 @@ namespace Microsoft.AspNet.Mvc
         {
             var response = context.HttpContext.Response;
 
+            // Encoding property on MediaTypeHeaderValue does not return the exact encoding instance that
+            // is set, so any settings(for example: BOM) on it will be lost when retrieving the value.
+            // In the scenario where the user does not supply encoding, we want to use UTF8 without BOM and
+            // for this reason do not rely on Encoding property.
             MediaTypeHeaderValue contentTypeHeader;
-            if (string.IsNullOrEmpty(ContentType))
+            Encoding encoding;
+            if (ContentType == null)
             {
-                contentTypeHeader = new MediaTypeHeaderValue("text/plain");
+                encoding = Encodings.UTF8EncodingWithoutBOM;
+                contentTypeHeader = DefaultContentType;
             }
             else
             {
-                contentTypeHeader = new MediaTypeHeaderValue(ContentType);
+                if (ContentType.Encoding == null)
+                {
+                    encoding = Encodings.UTF8EncodingWithoutBOM;
+                    // 1. Do not modify the user supplied content type
+                    // 2. Parse here to handle parameters apart from charset
+                    contentTypeHeader = MediaTypeHeaderValue.Parse(ContentType.ToString());
+                    contentTypeHeader.Encoding = encoding;
+                }
+                else
+                {
+                    encoding = ContentType.Encoding;
+                    contentTypeHeader = ContentType;
+                }
             }
 
-            contentTypeHeader.Encoding = ContentEncoding ?? Encodings.UTF8EncodingWithoutBOM;
             response.ContentType = contentTypeHeader.ToString();
 
             if (StatusCode != null)
@@ -46,7 +66,7 @@ namespace Microsoft.AspNet.Mvc
 
             if (Content != null)
             {
-                await response.WriteAsync(Content, contentTypeHeader.Encoding);
+                await response.WriteAsync(Content, encoding);
             }
         }
     }

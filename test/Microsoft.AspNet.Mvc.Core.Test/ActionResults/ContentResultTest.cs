@@ -1,11 +1,14 @@
-﻿// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+﻿
+// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Routing;
+using Microsoft.Net.Http.Headers;
 using Moq;
 using Xunit;
 
@@ -20,8 +23,7 @@ namespace Microsoft.AspNet.Mvc
             var contentResult = new ContentResult
             {
                 Content = "Test Content",
-                ContentType = "application/json",
-                ContentEncoding = null
+                ContentType = new MediaTypeHeaderValue("application/json")
             };
             var httpContext = GetHttpContext();
             var actionContext = GetActionContext(httpContext);
@@ -40,8 +42,10 @@ namespace Microsoft.AspNet.Mvc
             var contentResult = new ContentResult
             {
                 Content = "Test Content",
-                ContentType = "text/plain",
-                ContentEncoding = Encoding.ASCII
+                ContentType = new MediaTypeHeaderValue("text/plain")
+                {
+                    Encoding = Encoding.ASCII
+                }
             };
             var httpContext = GetHttpContext();
             var actionContext = GetActionContext(httpContext);
@@ -54,34 +58,16 @@ namespace Microsoft.AspNet.Mvc
         }
 
         [Fact]
-        public async Task ContentResult_Response_NullContentType_SetsEncodingAndDefaultContentType()
-        {
-            // Arrange
-            var contentResult = new ContentResult
-            {
-                Content = "Test Content",
-                ContentType = null,
-                ContentEncoding = Encoding.UTF7
-            };
-            var httpContext = GetHttpContext();
-            var actionContext = GetActionContext(httpContext);
-
-            // Act
-            await contentResult.ExecuteResultAsync(actionContext);
-
-            // Assert
-            Assert.Equal("text/plain; charset=utf-7", httpContext.Response.ContentType);
-        }
-
-        [Fact]
         public async Task ContentResult_Response_NullContent_SetsContentTypeAndEncoding()
         {
             // Arrange
             var contentResult = new ContentResult
             {
                 Content = null,
-                ContentType = "application/json",
-                ContentEncoding = Encoding.UTF8
+                ContentType = new MediaTypeHeaderValue("application/json")
+                {
+                    Encoding = Encoding.UTF8
+                }
             };
             var httpContext = GetHttpContext();
             var actionContext = GetActionContext(httpContext);
@@ -93,25 +79,60 @@ namespace Microsoft.AspNet.Mvc
             Assert.Equal("application/json; charset=utf-8", httpContext.Response.ContentType);
         }
 
-        [Fact]
-        public async Task ContentResult_Response_BadContentType_ThrowsFormatException()
+        public static TheoryData<MediaTypeHeaderValue, string, byte[]> ContentResultContentTypeData
+        {
+            get
+            {
+                return new TheoryData<MediaTypeHeaderValue, string, byte[]>
+                {
+                    {
+                        null,
+                        "text/plain; charset=utf-8",
+                        new byte[] { 97, 98, 99, 100 } //utf-8 without BOM
+                    },
+                    {
+                        new MediaTypeHeaderValue("text/foo"),
+                        "text/foo; charset=utf-8",
+                        new byte[] { 97, 98, 99, 100 } //utf-8 without BOM
+                    },
+                    {
+                        MediaTypeHeaderValue.Parse("text/foo;p1=p1-value"),
+                        "text/foo; p1=p1-value; charset=utf-8",
+                        new byte[] { 97, 98, 99, 100 } //utf-8 without BOM
+                    },
+                    {
+                        new MediaTypeHeaderValue("text/foo") { Encoding = Encoding.ASCII },
+                        "text/foo; charset=us-ascii",
+                        new byte[] { 97, 98, 99, 100 }
+                    }
+                };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(ContentResultContentTypeData))]
+        public async Task ContentResult_SetContentTypeAndEncoding(
+            MediaTypeHeaderValue contentType,
+            string expectedContentType,
+            byte[] expectedContentData)
         {
             // Arrange
             var contentResult = new ContentResult
             {
-                Content = "Test Content",
-                ContentType = "some-type",
-                ContentEncoding = null
+                Content = "abcd",
+                ContentType = contentType
             };
             var httpContext = GetHttpContext();
+            var memoryStream = new MemoryStream();
+            httpContext.Response.Body = memoryStream;
             var actionContext = GetActionContext(httpContext);
 
             // Act
-            var exception = await Assert.ThrowsAsync<FormatException>(
-                        async () => await contentResult.ExecuteResultAsync(actionContext));
+            await contentResult.ExecuteResultAsync(actionContext);
 
             // Assert
-            Assert.Equal("Invalid media type 'some-type'.", exception.Message);
+            Assert.Equal(expectedContentType, httpContext.Response.ContentType);
+            Assert.Equal(expectedContentData, memoryStream.ToArray());
         }
 
         private static ActionContext GetActionContext(HttpContext httpContext)
