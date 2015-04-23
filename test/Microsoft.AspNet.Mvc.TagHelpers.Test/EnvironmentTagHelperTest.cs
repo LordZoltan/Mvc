@@ -80,7 +80,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers.Test
             // Arrange
             var content = "content";
             var context = MakeTagHelperContext(
-                attributes: new Dictionary<string, object> { { "names", namesAttribute } },
+                attributes: new TagHelperAttributes { { "names", namesAttribute } },
                 content: content);
             var output = MakeTagHelperOutput("environment");
             var hostingEnvironment = new Mock<IHostingEnvironment>();
@@ -108,7 +108,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers.Test
             // Arrange
             var content = "content";
             var context = MakeTagHelperContext(
-                attributes: new Dictionary<string, object> { { "names", namesAttribute } },
+                attributes: new TagHelperAttributes { { "names", namesAttribute } },
                 content: content);
             var output = MakeTagHelperOutput("environment");
             var hostingEnvironment = new Mock<IHostingEnvironment>();
@@ -129,10 +129,10 @@ namespace Microsoft.AspNet.Mvc.TagHelpers.Test
         }
 
         private TagHelperContext MakeTagHelperContext(
-            IDictionary<string, object> attributes = null,
+            TagHelperAttributes attributes = null,
             string content = null)
         {
-            attributes = attributes ?? new Dictionary<string, object>();
+            attributes = attributes ?? new TagHelperAttributes();
 
             return new TagHelperContext(
                 attributes,
@@ -146,9 +146,9 @@ namespace Microsoft.AspNet.Mvc.TagHelpers.Test
                 });
         }
 
-        private TagHelperOutput MakeTagHelperOutput(string tagName, IDictionary<string, object> attributes = null)
+        private TagHelperOutput MakeTagHelperOutput(string tagName, TagHelperAttributes attributes = null)
         {
-            attributes = attributes ?? new Dictionary<string, object>();
+            attributes = attributes ?? new TagHelperAttributes();
 
             return new TagHelperOutput(tagName, attributes);
         }

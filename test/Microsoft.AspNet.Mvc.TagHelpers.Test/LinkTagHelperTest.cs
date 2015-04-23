@@ -32,10 +32,10 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         {
             get
             {
-                return new TheoryData<IDictionary<string, object>, Action<LinkTagHelper>>
+                return new TheoryData<TagHelperAttributes, Action<LinkTagHelper>>
                 {
                     {
-                        new Dictionary<string, object>
+                        new TagHelperAttributes
                         {
                             ["asp-href-include"] = "*.css"
                         },
@@ -45,7 +45,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                         }
                     },
                     {
-                        new Dictionary<string, object>
+                        new TagHelperAttributes
                         {
                             ["asp-href-include"] = "*.css",
                             ["asp-href-exclude"] = "*.min.css"
@@ -57,7 +57,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                         }
                     },
                     {
-                        new Dictionary<string, object>
+                        new TagHelperAttributes
                         {
                             ["asp-fallback-href"] = "test.css",
                             ["asp-fallback-test-class"] = "hidden",
@@ -73,7 +73,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                         }
                     },
                     {
-                        new Dictionary<string, object>
+                        new TagHelperAttributes
                         {
                             ["asp-fallback-href-include"] = "*.css",
                             ["asp-fallback-test-class"] = "hidden",
@@ -90,7 +90,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                     },
                     // File Version
                     {
-                        new Dictionary<string, object>
+                        new TagHelperAttributes
                         {
                             ["asp-file-version"] = "true"
                         },
@@ -100,7 +100,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                         }
                     },
                     {
-                        new Dictionary<string, object>
+                        new TagHelperAttributes
                         {
                             ["asp-href-include"] = "*.css",
                             ["asp-file-version"] = "true"
@@ -112,7 +112,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                         }
                     },
                     {
-                        new Dictionary<string, object>
+                        new TagHelperAttributes
                         {
                             ["asp-href-include"] = "*.css",
                             ["asp-href-exclude"] = "*.min.css",
@@ -126,7 +126,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                         }
                     },
                     {
-                        new Dictionary<string, object>
+                        new TagHelperAttributes
                         {
                             ["asp-fallback-href"] = "test.css",
                             ["asp-fallback-test-class"] = "hidden",
@@ -144,7 +144,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                         }
                     },
                     {
-                        new Dictionary<string, object>
+                        new TagHelperAttributes
                         {
                             ["asp-fallback-href-include"] = "*.css",
                             ["asp-fallback-test-class"] = "hidden",
@@ -168,7 +168,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         [Theory]
         [MemberData(nameof(RunsWhenRequiredAttributesArePresent_Data))]
         public void RunsWhenRequiredAttributesArePresent(
-            IDictionary<string, object> attributes,
+            TagHelperAttributes attributes,
             Action<LinkTagHelper> setProperties)
         {
             // Arrange
@@ -202,21 +202,21 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         {
             // Arrange
             var context = MakeTagHelperContext(
-                attributes: new Dictionary<string, object>
+                attributes: new TagHelperAttributes
                 {
-                    ["rel"] = new HtmlString("stylesheet"),
-                    ["data-extra"] = new HtmlString("something"),
-                    ["href"] = "test.css",
-                    ["asp-fallback-href"] = "test.css",
-                    ["asp-fallback-test-class"] = "hidden",
-                    ["asp-fallback-test-property"] = "visibility",
-                    ["asp-fallback-test-value"] = "hidden"
+                    { "rel", new HtmlString("stylesheet") },
+                    { "data-extra", new HtmlString("something") },
+                    { "href", "test.css" },
+                    { "asp-fallback-href", "test.css" },
+                    { "asp-fallback-test-class", "hidden" },
+                    { "asp-fallback-test-property", "visibility" },
+                    { "asp-fallback-test-value", "hidden" },
                 });
             var output = MakeTagHelperOutput("link",
-                attributes: new Dictionary<string, object>
+                attributes: new TagHelperAttributes
                 {
-                    ["rel"] = new HtmlString("stylesheet"),
-                    ["data-extra"] = new HtmlString("something"),
+                    { "rel", new HtmlString("stylesheet") },
+                    { "data-extra", new HtmlString("something") },
                 });
             var logger = new Mock<ILogger<LinkTagHelper>>();
             var hostingEnvironment = MakeHostingEnvironment();
@@ -248,10 +248,10 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         {
             get
             {
-                return new TheoryData<IDictionary<string, object>, Action<LinkTagHelper>>
+                return new TheoryData<TagHelperAttributes, Action<LinkTagHelper>>
                 {
                     {
-                        new Dictionary<string, object>
+                        new TagHelperAttributes
                         {
                             // This is commented out on purpose: ["asp-href-include"] = "*.css",
                             ["asp-href-exclude"] = "*.min.css"
@@ -263,7 +263,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                         }
                     },
                     {
-                        new Dictionary<string, object>
+                        new TagHelperAttributes
                         {
                             // This is commented out on purpose: ["asp-fallback-href"] = "test.css",
                             ["asp-fallback-test-class"] = "hidden",
@@ -279,7 +279,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                         }
                     },
                     {
-                        new Dictionary<string, object>
+                        new TagHelperAttributes
                         {
                             ["asp-fallback-href"] = "test.css",
                             ["asp-fallback-test-class"] = "hidden",
@@ -295,7 +295,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                         }
                     },
                     {
-                        new Dictionary<string, object>
+                        new TagHelperAttributes
                         {
                             // This is commented out on purpose: ["asp-fallback-href-include"] = "test.css",
                             ["asp-fallback-href-exclude"] = "**/*.min.css",
@@ -319,7 +319,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         [Theory]
         [MemberData(nameof(DoesNotRunWhenARequiredAttributeIsMissing_Data))]
         public void DoesNotRunWhenARequiredAttributeIsMissing(
-            IDictionary<string, object> attributes,
+            TagHelperAttributes attributes,
             Action<LinkTagHelper> setProperties)
         {
             // Arrange
@@ -375,15 +375,15 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         {
             // Arrange
             var context = MakeTagHelperContext(
-                attributes: new Dictionary<string, object>
+                attributes: new TagHelperAttributes
                 {
-                    ["rel"] = new HtmlString("stylesheet"),
-                    ["href"] = "/css/site.css",
-                    ["asp-href-include"] = "**/*.css"
+                    { "rel", new HtmlString("stylesheet") },
+                    { "href", "/css/site.css" },
+                    { "asp-href-include", "**/*.css" },
                 });
-            var output = MakeTagHelperOutput("link", attributes: new Dictionary<string, object>
+            var output = MakeTagHelperOutput("link", attributes: new TagHelperAttributes
             {
-                ["rel"] = new HtmlString("stylesheet"),
+                { "rel", new HtmlString("stylesheet") },
             });
             var logger = new Mock<ILogger<LinkTagHelper>>();
             var hostingEnvironment = MakeHostingEnvironment();
@@ -418,13 +418,13 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         {
             // Arrange
             var context = MakeTagHelperContext(
-                attributes: new Dictionary<string, object>
+                attributes: new TagHelperAttributes
                 {
                     ["rel"] = "stylesheet",
                     ["href"] = "/css/site.css",
                     ["asp-href-include"] = "**/*.css"
                 });
-            var output = MakeTagHelperOutput("link", attributes: new Dictionary<string, object>
+            var output = MakeTagHelperOutput("link", attributes: new TagHelperAttributes
             {
                 ["rel"] = "stylesheet",
             });
@@ -461,15 +461,15 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         {
             // Arrange
             var context = MakeTagHelperContext(
-                attributes: new Dictionary<string, object>
+                attributes: new TagHelperAttributes
                 {
-                    ["rel"] = new HtmlString("stylesheet"),
-                    ["href"] = "/css/site.css",
-                    ["asp-file-version"] = "true"
+                    { "rel", new HtmlString("stylesheet") },
+                    { "href", "/css/site.css" },
+                    { "asp-file-version", "true" }
                 });
-            var output = MakeTagHelperOutput("link", attributes: new Dictionary<string, object>
+            var output = MakeTagHelperOutput("link", attributes: new TagHelperAttributes
             {
-                ["rel"] = new HtmlString("stylesheet"),
+                { "rel", new HtmlString("stylesheet") },
             });
             var logger = new Mock<ILogger<LinkTagHelper>>();
             var hostingEnvironment = MakeHostingEnvironment();
@@ -500,15 +500,15 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         {
             // Arrange
             var context = MakeTagHelperContext(
-                attributes: new Dictionary<string, object>
+                attributes: new TagHelperAttributes
                 {
-                    ["rel"] = new HtmlString("stylesheet"),
-                    ["href"] = "/bar/css/site.css",
-                    ["asp-file-version"] = "true"
+                    { "rel", new HtmlString("stylesheet") },
+                    { "href", "/bar/css/site.css" },
+                    { "asp-file-version", "true" },
                 });
-            var output = MakeTagHelperOutput("link", attributes: new Dictionary<string, object>
+            var output = MakeTagHelperOutput("link", attributes: new TagHelperAttributes
             {
-                ["rel"] = new HtmlString("stylesheet"),
+                { "rel", new HtmlString("stylesheet") },
             });
             var logger = new Mock<ILogger<LinkTagHelper>>();
             var hostingEnvironment = MakeHostingEnvironment();
@@ -539,16 +539,16 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         {
             // Arrange
             var context = MakeTagHelperContext(
-                attributes: new Dictionary<string, object>
+                attributes: new TagHelperAttributes
                 {
-                    ["rel"] = new HtmlString("stylesheet"),
-                    ["href"] = "/css/site.css",
-                    ["asp-href-include"] = "**/*.css",
-                    ["asp-file-version"] = "true"
+                    { "rel", new HtmlString("stylesheet") },
+                    { "href", "/css/site.css" },
+                    { "asp-href-include", "**/*.css" },
+                    { "asp-file-version", "true" },
                 });
-            var output = MakeTagHelperOutput("link", attributes: new Dictionary<string, object>
+            var output = MakeTagHelperOutput("link", attributes: new TagHelperAttributes
             {
-                ["rel"] = new HtmlString("stylesheet"),
+                { "rel", new HtmlString("stylesheet") },
             });
             var logger = new Mock<ILogger<LinkTagHelper>>();
             var hostingEnvironment = MakeHostingEnvironment();
@@ -600,10 +600,10 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         }
 
         private static TagHelperContext MakeTagHelperContext(
-            IDictionary<string, object> attributes = null,
+            TagHelperAttributes attributes = null,
             string content = null)
         {
-            attributes = attributes ?? new Dictionary<string, object>();
+            attributes = attributes ?? new TagHelperAttributes();
 
             return new TagHelperContext(
                 attributes,
@@ -617,9 +617,9 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                 });
         }
 
-        private static TagHelperOutput MakeTagHelperOutput(string tagName, IDictionary<string, object> attributes = null)
+        private static TagHelperOutput MakeTagHelperOutput(string tagName, TagHelperAttributes attributes = null)
         {
-            attributes = attributes ?? new Dictionary<string, object>();
+            attributes = attributes ?? new TagHelperAttributes();
 
             return new TagHelperOutput(tagName, attributes);
         }

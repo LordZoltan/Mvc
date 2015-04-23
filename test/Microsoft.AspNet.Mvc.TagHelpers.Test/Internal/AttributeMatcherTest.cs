@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Razor.Runtime.TagHelpers;
 using Xunit;
@@ -19,7 +20,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers.Internal
             {
                 ModeAttributes.Create("mode0", new [] { "first-attr" })
             };
-            var attributes = new Dictionary<string, object>
+            var attributes = new TagHelperAttributes
             {
                 ["first-attr"] = "value",
                 ["not-in-any-mode"] = "value"
@@ -47,7 +48,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers.Internal
             {
                 ModeAttributes.Create("mode0", new [] { "first-attr", "second-attr" })
             };
-            var attributes = new Dictionary<string, object>
+            var attributes = new TagHelperAttributes
             {
                 ["first-attr"] = "value",
                 ["second-attr"] = "value",
@@ -82,7 +83,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers.Internal
                 ModeAttributes.Create("mode2", new [] { "first-attr", "second-attr", "third-attr" }),
                 ModeAttributes.Create("mode3", new [] { "fourth-attr" })
             };
-            var attributes = new Dictionary<string, object>
+            var attributes = new TagHelperAttributes
             {
                 ["second-attr"] = "value",
                 ["third-attr"] = "value",
@@ -119,10 +120,10 @@ namespace Microsoft.AspNet.Mvc.TagHelpers.Internal
         }
 
         private static TagHelperContext MakeTagHelperContext(
-            IDictionary<string, object> attributes = null,
+            TagHelperAttributes attributes = null,
             string content = null)
         {
-            attributes = attributes ?? new Dictionary<string, object>();
+            attributes = attributes ?? new TagHelperAttributes();
 
             return new TagHelperContext(
                 attributes,
