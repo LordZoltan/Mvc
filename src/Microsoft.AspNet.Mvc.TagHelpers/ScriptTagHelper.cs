@@ -151,10 +151,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
 
         // Protected to ensure subclasses are correctly activated. Internal for ease of use when testing.
         [Activate]
-        protected internal ILoggerFactory LoggerFactory { get; set; }
-
-        // TODO: will remove LoggerFactory and activate logger once DI/hosting bug is fixed
-        internal ILogger<ScriptTagHelper> Logger { get; set; }
+        protected internal ILogger<ScriptTagHelper> Logger { get; set; }
 
         [Activate]
         protected internal IHostingEnvironment HostingEnvironment { get; set; }
@@ -185,9 +182,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
 
             var modeResult = AttributeMatcher.DetermineMode(context, ModeDetails);
 
-            var logger = Logger ?? LoggerFactory.CreateLogger<ScriptTagHelper>();
-
-            modeResult.LogDetails(logger, this, context.UniqueId, ViewContext.View.Path);
+            modeResult.LogDetails(Logger, this, context.UniqueId, ViewContext.View.Path);
 
             if (!modeResult.FullMatches.Any())
             {
