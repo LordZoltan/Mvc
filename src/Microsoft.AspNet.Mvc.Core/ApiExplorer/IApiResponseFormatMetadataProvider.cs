@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Net.Http.Headers;
 
-namespace Microsoft.AspNet.Mvc.Description
+namespace Microsoft.AspNet.Mvc.ApiExplorer
 {
     /// <summary>
     /// Provides metadata information about the response format to an <c>IApiDescriptionProvider</c>.
