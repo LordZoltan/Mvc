@@ -4,12 +4,12 @@
 namespace Microsoft.AspNet.Mvc.Description
 {
     /// <summary>
-    /// Represents visibility metadata for an <see cref="ApiDescription"/>.
+    /// Represents visibility metadata for an <c>ApiDescription</c>.
     /// </summary>
     public interface IApiDescriptionVisibilityProvider
     {
         /// <summary>
-        /// If <c>false</c> then no <see cref="ApiDescription"/> objects will be created for the associated controller
+        /// If <c>false</c> then no <c>ApiDescription</c> objects will be created for the associated controller
         /// or action.
         /// </summary>
         bool IgnoreApi { get; }
