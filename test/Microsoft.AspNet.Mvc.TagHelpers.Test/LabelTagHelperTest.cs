@@ -165,7 +165,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         {
             // Arrange
             var expectedTagName = "not-label";
-            var expectedAttributes = new TagHelperAttributes
+            var expectedAttributes = new TagHelperAttributeList
             {
                 { "class", "form-control" },
                 { "for", tagHelperOutputContent.ExpectedId }
@@ -187,7 +187,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var expectedPostContent = "original post-content";
 
             var tagHelperContext = new TagHelperContext(
-                allAttributes: new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
@@ -197,7 +197,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                     tagHelperContent.SetContent(tagHelperOutputContent.OriginalChildContent);
                     return Task.FromResult<TagHelperContent>(tagHelperContent);
                 });
-            var htmlAttributes = new TagHelperAttributes
+            var htmlAttributes = new TagHelperAttributeList
             {
                 { "class", "form-control" },
             };

@@ -89,7 +89,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             string expectedContent)
         {
             // Arrange
-            var expectedAttributes = new TagHelperAttributes
+            var expectedAttributes = new TagHelperAttributeList
             {
                 { "class", "form-control" },
                 { "id", nameAndId.Id },
@@ -114,7 +114,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             };
 
             var tagHelperContext = new TagHelperContext(
-                allAttributes: new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
@@ -124,7 +124,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                     tagHelperContent.SetContent("Something");
                     return Task.FromResult<TagHelperContent>(tagHelperContent);
                 });
-            var htmlAttributes = new TagHelperAttributes
+            var htmlAttributes = new TagHelperAttributeList
             {
                 { "class", "form-control" },
             };

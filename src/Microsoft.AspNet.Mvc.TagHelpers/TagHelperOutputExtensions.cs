@@ -33,18 +33,21 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         {
             if (!tagHelperOutput.Attributes.ContainsName(attributeName))
             {
-                IReadOnlyTagHelperAttribute entry;
+                IEnumerable<IReadOnlyTagHelperAttribute> entries;
 
                 // We look for the original attribute so we can restore the exact attribute name the user typed.
                 // Approach also ignores changes made to tagHelperOutput[attributeName].
-                if (!context.AllAttributes.TryGetAttribute(attributeName, out entry))
+                if (!context.AllAttributes.TryGetAttributes(attributeName, out entries))
                 {
                     throw new ArgumentException(
                         Resources.FormatTagHelperOutput_AttributeDoesNotExist(attributeName, nameof(TagHelperContext)),
                         nameof(attributeName));
                 }
 
-                tagHelperOutput.Attributes.Add(entry.Name, entry.Value);
+                foreach (var entry in entries)
+                {
+                    tagHelperOutput.Attributes.Add(entry.Name, entry.Value);
+                }
             }
         }
 
@@ -94,11 +97,11 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
 
                     if (tagHelperOutput.Attributes.TryGetAttribute("class", out classAttribute))
                     {
-                        classAttribute.Value += " " + attribute.Value;
+                        tagHelperOutput.Attributes["class"] = classAttribute.Value + " " + attribute.Value;
                     }
                     else
                     {
-                        tagHelperOutput.Attributes["class"] = attribute.Value;
+                        tagHelperOutput.Attributes.Add("class", attribute.Value);
                     }
                 }
             }

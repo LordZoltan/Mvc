@@ -20,7 +20,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers.Internal
             {
                 ModeAttributes.Create("mode0", new [] { "first-attr" })
             };
-            var attributes = new TagHelperAttributes
+            var attributes = new TagHelperAttributeList
             {
                 ["first-attr"] = "value",
                 ["not-in-any-mode"] = "value"
@@ -48,7 +48,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers.Internal
             {
                 ModeAttributes.Create("mode0", new [] { "first-attr", "second-attr" })
             };
-            var attributes = new TagHelperAttributes
+            var attributes = new TagHelperAttributeList
             {
                 ["first-attr"] = "value",
                 ["second-attr"] = "value",
@@ -83,7 +83,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers.Internal
                 ModeAttributes.Create("mode2", new [] { "first-attr", "second-attr", "third-attr" }),
                 ModeAttributes.Create("mode3", new [] { "fourth-attr" })
             };
-            var attributes = new TagHelperAttributes
+            var attributes = new TagHelperAttributeList
             {
                 ["second-attr"] = "value",
                 ["third-attr"] = "value",
@@ -120,10 +120,10 @@ namespace Microsoft.AspNet.Mvc.TagHelpers.Internal
         }
 
         private static TagHelperContext MakeTagHelperContext(
-            TagHelperAttributes attributes = null,
+            TagHelperAttributeList attributes = null,
             string content = null)
         {
-            attributes = attributes ?? new TagHelperAttributes();
+            attributes = attributes ?? new TagHelperAttributeList();
 
             return new TagHelperContext(
                 attributes,

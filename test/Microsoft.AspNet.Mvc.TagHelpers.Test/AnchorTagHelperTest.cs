@@ -25,7 +25,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var metadataProvider = new TestModelMetadataProvider();
 
             var tagHelperContext = new TagHelperContext(
-                allAttributes: new TagHelperAttributes
+                allAttributes: new TagHelperAttributeList
                 {
                     { "id", "myanchor" },
                     { "asp-route-foo", "bar" },
@@ -45,7 +45,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                 });
             var output = new TagHelperOutput(
                 expectedTagName,
-                attributes: new TagHelperAttributes
+                attributes: new TagHelperAttributeList
                 {
                     { "id", "myanchor" },
                     { "asp-route-foo", "bar" },
@@ -88,7 +88,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         {
             // Arrange
             var context = new TagHelperContext(
-                allAttributes: new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
@@ -100,7 +100,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                 });
             var output = new TagHelperOutput(
                 "a",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             output.Content.SetContent(string.Empty);
 
             var generator = new Mock<IHtmlGenerator>(MockBehavior.Strict);
@@ -131,7 +131,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
         {
             // Arrange
             var context = new TagHelperContext(
-                allAttributes: new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
@@ -143,7 +143,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                 });
             var output = new TagHelperOutput(
                 "a",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             output.Content.SetContent(string.Empty);
 
             var generator = new Mock<IHtmlGenerator>();
@@ -184,7 +184,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var anchorTagHelper = new AnchorTagHelper();
             var output = new TagHelperOutput(
                 "a",
-                attributes: new TagHelperAttributes
+                attributes: new TagHelperAttributeList
                 {
                     { "href", "http://www.contoso.com" }
                 });
@@ -222,7 +222,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             typeof(AnchorTagHelper).GetProperty(propertyName).SetValue(anchorTagHelper, "Home");
             var output = new TagHelperOutput(
                 "a",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             var expectedErrorMessage = "Cannot determine an 'href' attribute for <a>. An <a> with a specified " +
                 "'asp-route' must not have an 'asp-action' or 'asp-controller' attribute.";
 

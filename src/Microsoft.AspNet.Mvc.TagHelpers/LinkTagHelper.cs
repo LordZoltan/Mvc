@@ -231,7 +231,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var mode = modeResult.FullMatches.Select(match => match.Mode).Max();
 
             // NOTE: Values in TagHelperOutput.Attributes may already be HTML-encoded.
-            var attributes = new TagHelperAttributes(output.Attributes);
+            var attributes = new TagHelperAttributeList(output.Attributes);
 
             var builder = new DefaultTagHelperContent();
 
@@ -256,7 +256,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             output.Content.SetContent(builder);
         }
 
-        private void BuildGlobbedLinkTags(TagHelperAttributes attributes, TagHelperContent builder)
+        private void BuildGlobbedLinkTags(TagHelperAttributeList attributes, TagHelperContent builder)
         {
             EnsureGlobbingUrlBuilder();
 
@@ -336,7 +336,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             }
         }
 
-        private void BuildLinkTag(TagHelperAttributes attributes, TagHelperContent builder)
+        private void BuildLinkTag(TagHelperAttributeList attributes, TagHelperContent builder)
         {
             EnsureFileVersionProvider();
             builder.Append("<link ");

@@ -171,13 +171,13 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             string ignored)
         {
             // Arrange
-            var originalAttributes = new TagHelperAttributes
+            var originalAttributes = new TagHelperAttributeList
             {
                 { "class", "form-control" },
             };
             var originalPostContent = "original content";
 
-            var expectedAttributes = new TagHelperAttributes(originalAttributes)
+            var expectedAttributes = new TagHelperAttributeList(originalAttributes)
             {
                 { "id", nameAndId.Id },
                 { "name", nameAndId.Name },
@@ -198,7 +198,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var modelExpression = new ModelExpression(nameAndId.Name, modelExplorer);
 
             var tagHelperContext = new TagHelperContext(
-                allAttributes: new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
@@ -258,13 +258,13 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             string expectedOptions)
         {
             // Arrange
-            var originalAttributes = new TagHelperAttributes
+            var originalAttributes = new TagHelperAttributeList
             {
                 { "class", "form-control" },
             };
             var originalPostContent = "original content";
 
-            var expectedAttributes = new TagHelperAttributes(originalAttributes)
+            var expectedAttributes = new TagHelperAttributeList(originalAttributes)
             {
                 { "id", nameAndId.Id },
                 { "name", nameAndId.Name },
@@ -286,7 +286,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var modelExpression = new ModelExpression(nameAndId.Name, modelExplorer);
 
             var tagHelperContext = new TagHelperContext(
-                allAttributes: new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
@@ -360,13 +360,13 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             string expectedOptions)
         {
             // Arrange
-            var originalAttributes = new TagHelperAttributes
+            var originalAttributes = new TagHelperAttributeList
             {
                 { "class", "form-control" },
             };
             var originalPostContent = "original content";
 
-            var expectedAttributes = new TagHelperAttributes(originalAttributes)
+            var expectedAttributes = new TagHelperAttributeList(originalAttributes)
             {
                 { "id", nameAndId.Id },
                 { "name", nameAndId.Name },
@@ -388,7 +388,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var modelExpression = new ModelExpression(name: string.Empty, modelExplorer: modelExplorer);
 
             var tagHelperContext = new TagHelperContext(
-                allAttributes: new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
@@ -462,12 +462,12 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             IEnumerable<SelectListItem> expectedItems)
         {
             // Arrange
-            var contextAttributes = new TagHelperAttributes
+            var contextAttributes = new TagHelperAttributeList
             {
                 // Provided for completeness. Select tag helper does not confirm AllAttributes set is consistent.
                 { attributeName, attributeValue },
             };
-            var originalAttributes = new TagHelperAttributes
+            var originalAttributes = new TagHelperAttributeList
             {
                 { attributeName, attributeValue },
             };
@@ -548,9 +548,9 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             bool allowMultiple)
         {
             // Arrange
-            var contextAttributes = new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+            var contextAttributes = new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>());
-            var originalAttributes = new TagHelperAttributes();
+            var originalAttributes = new TagHelperAttributeList();
             var propertyName = "Property1";
             var tagName = "select";
 

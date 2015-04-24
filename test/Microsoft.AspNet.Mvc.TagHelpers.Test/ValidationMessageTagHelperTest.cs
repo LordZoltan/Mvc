@@ -35,7 +35,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var expectedPostContent = "original post-content";
 
             var tagHelperContext = new TagHelperContext(
-                allAttributes: new TagHelperAttributes
+                allAttributes: new TagHelperAttributeList
                 {
                     { "id", "myvalidationmessage" },
                     { "for", modelExpression },
@@ -50,7 +50,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                 });
             var output = new TagHelperOutput(
                 expectedTagName,
-                attributes: new TagHelperAttributes
+                attributes: new TagHelperAttributeList
                 {
                     { "id", "myvalidationmessage" }
                 });
@@ -95,7 +95,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var expectedContent = "original content";
             var expectedPostContent = "original post-content";
             var context = new TagHelperContext(
-                allAttributes: new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
@@ -107,7 +107,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                 });
             var output = new TagHelperOutput(
                 "span",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             output.PreContent.SetContent(expectedPreContent);
             output.Content.SetContent(expectedContent);
             output.PostContent.SetContent(expectedPostContent);
@@ -147,11 +147,11 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             };
             var output = new TagHelperOutput(
                 "span",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             output.Content.SetContent(outputContent);
 
             var context = new TagHelperContext(
-                allAttributes: new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
@@ -207,10 +207,10 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             };
             var output = new TagHelperOutput(
                 "span",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
 
             var context = new TagHelperContext(
-                allAttributes: new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
@@ -263,7 +263,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var expectedPostContent = "original post-content";
             var output = new TagHelperOutput(
                 "span",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             output.PreContent.SetContent(expectedPreContent);
             output.Content.SetContent(expectedContent);
             output.PostContent.SetContent(expectedPostContent);

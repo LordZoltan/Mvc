@@ -8,12 +8,111 @@ using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.AspNet.Razor.Runtime.TagHelpers;
 using Microsoft.AspNet.Testing;
 using Microsoft.Framework.WebEncoders.Testing;
+using Microsoft.Internal.Web.Utils;
 using Xunit;
 
 namespace Microsoft.AspNet.Mvc.TagHelpers
 {
     public class TagHelperOutputExtensionsTest
     {
+        public static TheoryData CopyHtmlAttributeData_MultipleAttributesSameName
+        {
+            get
+            {
+                // attributeNameToCopy, allAttributes, expectedAttributes
+                return new TheoryData<string, TagHelperAttributeList, IEnumerable<TagHelperAttribute>>
+                {
+                    {
+                        "hello",
+                        new TagHelperAttributeList
+                        {
+                            { "hello", "world" },
+                            { "hello", "world2" }
+                        },
+                        new[]
+                        {
+                            new TagHelperAttribute("hello", "world"),
+                            new TagHelperAttribute("hello", "world2"),
+                        }
+                    },
+                    {
+                        "HELLO",
+                        new TagHelperAttributeList
+                        {
+                            { "hello", "world" },
+                            { "hello", "world2" }
+                        },
+                        new[]
+                        {
+                            new TagHelperAttribute("hello", "world"),
+                            new TagHelperAttribute("hello", "world2"),
+                        }
+                    },
+                    {
+                        "hello",
+                        new TagHelperAttributeList
+                        {
+                            { "HelLO", "world" },
+                            { "HELLO", "world2" }
+                        },
+                        new[]
+                        {
+                            new TagHelperAttribute("HelLO", "world"),
+                            new TagHelperAttribute("HELLO", "world2"),
+                        }
+                    },
+                    {
+                        "hello",
+                        new TagHelperAttributeList
+                        {
+                            { "hello", "world" },
+                            { "HELLO", "world2" }
+                        },
+                        new[]
+                        {
+                            new TagHelperAttribute("hello", "world"),
+                            new TagHelperAttribute("HELLO", "world2"),
+                        }
+                    },
+                    {
+                        "HELLO",
+                        new TagHelperAttributeList
+                        {
+                            { "HeLlO", "world" },
+                            { "heLLo", "world2" }
+                        },
+                        new[]
+                        {
+                            new TagHelperAttribute("HeLlO", "world"),
+                            new TagHelperAttribute("heLLo", "world2"),
+                        }
+                    },
+                };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(CopyHtmlAttributeData_MultipleAttributesSameName))]
+        public void CopyHtmlAttribute_CopiesAllOriginalAttributes(
+            string attributeNameToCopy,
+            TagHelperAttributeList allAttributes,
+            IEnumerable<TagHelperAttribute> expectedAttributes)
+        {
+            // Arrange
+            var output = new TagHelperOutput("p", attributes: new TagHelperAttributeList());
+            var context = new TagHelperContext(
+                allAttributes,
+                items: new Dictionary<object, object>(),
+                uniqueId: "test",
+                getChildContentAsync: () => Task.FromResult<TagHelperContent>(result: null));
+
+            // Act
+            output.CopyHtmlAttribute(attributeNameToCopy, context);
+
+            // Assert
+            Assert.Equal(expectedAttributes, output.Attributes, CaseSensitiveTagHelperAttributeComparer.Default);
+        }
+
         [Theory]
         [InlineData("hello", "world")]
         [InlineData("HeLlO", "wOrLd")]
@@ -22,9 +121,9 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             // Arrange
             var tagHelperOutput = new TagHelperOutput(
                 "p",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             var tagHelperContext = new TagHelperContext(
-                allAttributes: new TagHelperAttributes
+                allAttributes: new TagHelperAttributeList
                 {
                     { attributeName, attributeValue }
                 },
@@ -53,13 +152,13 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var attributeName = "hello";
             var tagHelperOutput = new TagHelperOutput(
                 "p",
-                attributes: new TagHelperAttributes()
+                attributes: new TagHelperAttributeList()
                 {
                     { attributeName, "world2" }
                 });
             var expectedAttribute = new TagHelperAttribute(attributeName, "world2");
             var tagHelperContext = new TagHelperContext(
-                allAttributes: new TagHelperAttributes
+                allAttributes: new TagHelperAttributeList
                 {
                     { attributeName, "world" }
                 },
@@ -87,9 +186,9 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var invalidAttributeName = "hello2";
             var tagHelperOutput = new TagHelperOutput(
                 "p",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             var tagHelperContext = new TagHelperContext(
-                allAttributes: new TagHelperAttributes
+                allAttributes: new TagHelperAttributeList
                 {
                     { "hello", "world" }
                 },
@@ -115,7 +214,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             // Arrange
             var tagHelperOutput = new TagHelperOutput(
                 "p",
-                attributes: new TagHelperAttributes()
+                attributes: new TagHelperAttributeList()
                 {
                     { "route-Hello", "World" },
                     { "Route-I", "Am" }
@@ -138,7 +237,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             // Arrange
             var tagHelperOutput = new TagHelperOutput(
                 "p",
-                attributes: new TagHelperAttributes()
+                attributes: new TagHelperAttributeList()
                 {
                     { "routeHello", "World" },
                     { "Routee-I", "Am" }
@@ -155,13 +254,171 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             Assert.Equal(attribute.Value, "Am");
         }
 
+        public static TheoryData MultipleAttributeSameNameData
+        {
+            get
+            {
+                // tagBuilderAttributes, outputAttributes, expectedAttributes
+                return new TheoryData<Dictionary<string, string>, TagHelperAttributeList, TagHelperAttributeList>
+                {
+                    {
+                        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                        {
+                            { "class", "btn" }
+                        },
+                        new TagHelperAttributeList
+                        {
+                            { "class", "btn2" },
+                            { "class", "btn3" }
+                        },
+                        new TagHelperAttributeList
+                        {
+                            { "class", "btn2 btn" }
+                        }
+                    },
+                    {
+                        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                        {
+                            { "ClAsS", "btn" }
+                        },
+                        new TagHelperAttributeList
+                        {
+                            { "class", "btn2" },
+                            { "class", "btn3" }
+                        },
+                        new TagHelperAttributeList
+                        {
+                            { "class", "btn2 btn" }
+                        }
+                    },
+                    {
+                        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                        {
+                            { "class", "btn" }
+                        },
+                        new TagHelperAttributeList
+                        {
+                            { "clASS", "btn2" },
+                            { "class", "btn3" }
+                        },
+                        new TagHelperAttributeList
+                        {
+                            { "class", "btn2 btn" }
+                        }
+                    },
+                    {
+                        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                        {
+                            { "class", "btn" }
+                        },
+                        new TagHelperAttributeList
+                        {
+                            { "clASS", "btn2" },
+                            { "CLass", "btn3" }
+                        },
+                        new TagHelperAttributeList
+                        {
+                            { "class", "btn2 btn" }
+                        }
+                    },
+                    {
+                        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                        {
+                            { "CLASS", "btn" }
+                        },
+                        new TagHelperAttributeList
+                        {
+                            { "clASS", "btn2" },
+                            { "CLass", "btn3" }
+                        },
+                        new TagHelperAttributeList
+                        {
+                            { "class", "btn2 btn" }
+                        }
+                    },
+                    {
+                        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                        {
+                            { "CLASS", "btn" }
+                        },
+                        new TagHelperAttributeList
+                        {
+                            { "before", "before value" },
+                            { "clASS", "btn2" },
+                            { "mid", "mid value" },
+                            { "CLass", "btn3" },
+                            { "after", "after value" },
+                        },
+                        new TagHelperAttributeList
+                        {
+                            { "before", "before value" },
+                            { "class", "btn2 btn" },
+                            { "mid", "mid value" },
+                            { "after", "after value" },
+                        }
+                    },
+                    {
+                        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                        {
+                            { "A", "A Value" },
+                            { "CLASS", "btn" },
+                            { "B", "B Value" },
+                        },
+                        new TagHelperAttributeList
+                        {
+                            { "before", "before value" },
+                            { "clASS", "btn2" },
+                            { "mid", "mid value" },
+                            { "CLass", "btn3" },
+                            { "after", "after value" },
+                        },
+                        new TagHelperAttributeList
+                        {
+                            { "before", "before value" },
+                            { "class", "btn2 btn" },
+                            { "mid", "mid value" },
+                            { "after", "after value" },
+                            { "A", "A Value" },
+                            { "B", "B Value" },
+                        }
+                    }
+                };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(MultipleAttributeSameNameData))]
+        public void MergeAttributes_ClearsDuplicateClassNameAttributes(
+            Dictionary<string, string> tagBuilderAttributes,
+            TagHelperAttributeList outputAttributes,
+            TagHelperAttributeList expectedAttributes)
+        {
+            // Arrange
+            var tagHelperOutput = new TagHelperOutput("p", outputAttributes);
+
+            var tagBuilder = new TagBuilder("p", new CommonTestEncoder());
+            foreach (var attr in tagBuilderAttributes)
+            {
+                tagBuilder.Attributes.Add(attr.Key, attr.Value);
+            }
+
+            // Act
+            tagHelperOutput.MergeAttributes(tagBuilder);
+
+            // Assert
+            Assert.Equal(
+                expectedAttributes,
+                tagHelperOutput.Attributes,
+                CaseSensitiveTagHelperAttributeComparer.Default);
+        }
+
         [Fact]
         public void MergeAttributes_DoesNotReplace_TagHelperOutputAttributeValues()
         {
             // Arrange
             var tagHelperOutput = new TagHelperOutput(
                 "p",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             var expectedAttribute = new TagHelperAttribute("type", "btn");
             tagHelperOutput.Attributes.Add(expectedAttribute);
 
@@ -182,7 +439,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             // Arrange
             var tagHelperOutput = new TagHelperOutput(
                 "p",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             tagHelperOutput.Attributes.Add("class", "Hello");
 
             var tagBuilder = new TagBuilder("p", new CommonTestEncoder());
@@ -208,7 +465,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             // Arrange
             var tagHelperOutput = new TagHelperOutput(
                 "p",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             tagHelperOutput.Attributes.Add(originalName, "Hello");
 
             var tagBuilder = new TagBuilder("p", new CommonTestEncoder());
@@ -228,7 +485,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             // Arrange
             var tagHelperOutput = new TagHelperOutput(
                 "p",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
 
             var tagBuilder = new TagBuilder("p", new CommonTestEncoder());
             var expectedAttribute = new TagHelperAttribute("visible", "val < 3");
@@ -248,7 +505,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             // Arrange
             var tagHelperOutput = new TagHelperOutput(
                 "p",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
 
             var tagBuilder = new TagBuilder("p", new CommonTestEncoder());
             var expectedAttribute1 = new TagHelperAttribute("class", "btn");
@@ -273,7 +530,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             // Arrange
             var tagHelperOutput = new TagHelperOutput(
                 "p",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             var expectedAttribute = new TagHelperAttribute("class", "btn");
             tagHelperOutput.Attributes.Add(expectedAttribute);
 
@@ -293,7 +550,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             // Arrange
             var tagHelperOutput = new TagHelperOutput(
                 "p",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             var expectedOutputAttribute = new TagHelperAttribute("class", "btn");
             tagHelperOutput.Attributes.Add(expectedOutputAttribute);
 
@@ -310,6 +567,36 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             Assert.Equal(expectedOutputAttribute.Value, attribute.Value);
             attribute = Assert.Single(tagHelperOutput.Attributes, attr => attr.Name.Equals("for"));
             Assert.Equal(expectedBuilderAttribute.Value, attribute.Value);
+        }
+
+        private class CaseSensitiveTagHelperAttributeComparer : IEqualityComparer<IReadOnlyTagHelperAttribute>
+        {
+            public readonly static CaseSensitiveTagHelperAttributeComparer Default =
+                new CaseSensitiveTagHelperAttributeComparer();
+
+            private CaseSensitiveTagHelperAttributeComparer()
+            {
+            }
+
+            public bool Equals(
+                IReadOnlyTagHelperAttribute attributeX,
+                IReadOnlyTagHelperAttribute attributeY)
+            {
+                return
+                    attributeX == attributeY ||
+                    // Normal comparer doesn't care about the Name case, in tests we do.
+                    string.Equals(attributeX.Name, attributeY.Name, StringComparison.Ordinal) &&
+                    Equals(attributeX.Value, attributeY.Value);
+            }
+
+            public int GetHashCode(IReadOnlyTagHelperAttribute attribute)
+            {
+                return HashCodeCombiner
+                    .Start()
+                    .Add(attribute.Name, StringComparer.Ordinal)
+                    .Add(attribute.Value)
+                    .CombinedHash;
+            }
         }
     }
 }

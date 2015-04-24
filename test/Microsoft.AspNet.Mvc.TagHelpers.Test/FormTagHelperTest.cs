@@ -26,7 +26,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var expectedTagName = "not-form";
             var metadataProvider = new TestModelMetadataProvider();
             var tagHelperContext = new TagHelperContext(
-                allAttributes: new TagHelperAttributes
+                allAttributes: new TagHelperAttributeList
                 {
                     { "id", "myform" },
                     { "asp-route-foo", "bar" },
@@ -45,7 +45,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                 });
             var output = new TagHelperOutput(
                 expectedTagName,
-                attributes: new TagHelperAttributes
+                attributes: new TagHelperAttributeList
                 {
                     { "id", "myform" },
                     { "asp-route-foo", "bar" },
@@ -98,7 +98,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             // Arrange
             var viewContext = CreateViewContext();
             var context = new TagHelperContext(
-                allAttributes: new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
@@ -110,7 +110,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                 });
             var output = new TagHelperOutput(
                 "form",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             var generator = new Mock<IHtmlGenerator>(MockBehavior.Strict);
             generator
                 .Setup(mock => mock.GenerateForm(
@@ -150,7 +150,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             // Arrange
             var testViewContext = CreateViewContext();
             var context = new TagHelperContext(
-                allAttributes: new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
@@ -163,7 +163,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var expectedAttribute = new TagHelperAttribute("asp-ROUTEE-NotRoute", "something");
             var output = new TagHelperOutput(
                 "form",
-                attributes: new TagHelperAttributes()
+                attributes: new TagHelperAttributeList()
                 {
                     { "asp-route-val", "hello" },
                     { "asp-roUte--Foo", "bar" }
@@ -222,7 +222,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             // Arrange
             var viewContext = CreateViewContext();
             var context = new TagHelperContext(
-                allAttributes: new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
@@ -234,7 +234,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                 });
             var output = new TagHelperOutput(
                 "form",
-                attributes: new TagHelperAttributes());
+                attributes: new TagHelperAttributeList());
             var generator = new Mock<IHtmlGenerator>(MockBehavior.Strict);
             generator
                 .Setup(mock => mock.GenerateForm(viewContext, "Index", "Home", null, null, null))
@@ -268,7 +268,8 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             // Arrange
             var viewContext = CreateViewContext();
             var context = new TagHelperContext(
-                allAttributes: new Dictionary<string, object>(),
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
+                    Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
                 getChildContentAsync: () =>
@@ -279,7 +280,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
                 });
             var output = new TagHelperOutput(
                 "form",
-                attributes: new Dictionary<string, object>
+                attributes: new TagHelperAttributeList
                 {
                     { "asp-route-foo", "bar" }
                 });
@@ -337,12 +338,12 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             };
 
             var output = new TagHelperOutput("form",
-                                             attributes: new TagHelperAttributes
+                                             attributes: new TagHelperAttributeList
                                              {
                                                  { "aCTiON", "my-action" },
                                              });
             var context = new TagHelperContext(
-                allAttributes: new ReadOnlyTagHelperAttributes<IReadOnlyTagHelperAttribute>(
+                allAttributes: new ReadOnlyTagHelperAttributeList<IReadOnlyTagHelperAttribute>(
                     Enumerable.Empty<IReadOnlyTagHelperAttribute>()),
                 items: new Dictionary<object, object>(),
                 uniqueId: "test",
@@ -377,7 +378,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var formTagHelper = new FormTagHelper();
             var tagHelperOutput = new TagHelperOutput(
                 "form",
-                attributes: new TagHelperAttributes
+                attributes: new TagHelperAttributeList
                 {
                     { "action", "my-action" },
                 });
@@ -414,7 +415,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             typeof(FormTagHelper).GetProperty(propertyName).SetValue(formTagHelper, "Home");
             var output = new TagHelperOutput(
                 "form",
-                attributes: new Dictionary<string, object>());
+                attributes: new TagHelperAttributeList());
             var expectedErrorMessage = "Cannot determine an 'action' attribute for <form>. A <form> with a specified " +
                 "'asp-route' must not have an 'asp-action' or 'asp-controller' attribute.";
 

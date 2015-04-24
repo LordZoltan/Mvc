@@ -199,7 +199,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             var mode = modeResult.FullMatches.Select(match => match.Mode).Max();
 
             // NOTE: Values in TagHelperOutput.Attributes may already be HTML-encoded.
-            var attributes = new TagHelperAttributes(output.Attributes);
+            var attributes = new TagHelperAttributeList(output.Attributes);
 
             var builder = new DefaultTagHelperContent();
             var originalContent = await context.GetChildContentAsync();
@@ -227,7 +227,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
 
         private void BuildGlobbedScriptTags(
             TagHelperContent originalContent,
-            TagHelperAttributes attributes,
+            TagHelperAttributeList attributes,
             TagHelperContent builder)
         {
             EnsureGlobbingUrlBuilder();
@@ -251,7 +251,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             }
         }
 
-        private void BuildFallbackBlock(TagHelperAttributes attributes, DefaultTagHelperContent builder)
+        private void BuildFallbackBlock(TagHelperAttributeList attributes, DefaultTagHelperContent builder)
         {
             EnsureGlobbingUrlBuilder();
             EnsureFileVersionProvider();
@@ -336,7 +336,7 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
 
         private void BuildScriptTag(
             TagHelperContent content,
-            TagHelperAttributes attributes,
+            TagHelperAttributeList attributes,
             TagHelperContent builder)
         {
             EnsureFileVersionProvider();
