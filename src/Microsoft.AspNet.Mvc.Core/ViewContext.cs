@@ -19,7 +19,7 @@ namespace Microsoft.AspNet.Mvc
         private DynamicViewData _viewBag;
 
         /// <summary>
-        /// Creates a empty <see cref="ViewContext"/>.
+        /// Creates an empty <see cref="ViewContext"/>.
         /// </summary>
         /// <remarks>
         /// The default constructor is provided for unit test purposes only.

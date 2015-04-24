@@ -165,6 +165,23 @@ namespace Microsoft.AspNet.Mvc
             Assert.Equal("CustomViewName", actualResult.ViewName);
         }
 
+        [Fact]
+        public void ViewComponent_ViewContext_ViewData_ReturnsDefaultInstanceIfNull()
+        {
+            // Arrange && Act
+            var viewComponent = new TestViewComponent();
+
+            // Assert
+            // ViewComponent.ViewContext returns the default instance for the unit test scenarios
+            Assert.NotNull(viewComponent.ViewContext);
+            Assert.NotNull(viewComponent.ViewContext.ViewData);
+
+            // ViewComponent.ViewData returns the default instance for the unit test scenarios
+            Assert.Empty(viewComponent.ViewContext.ViewData);
+            Assert.NotNull(viewComponent.ViewData);
+            Assert.Empty(viewComponent.ViewData);
+        }
+
         private class TestViewComponent : ViewComponent
         {
         }
